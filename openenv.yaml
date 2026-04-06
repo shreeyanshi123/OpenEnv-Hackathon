@@ -1,0 +1,51 @@
+spec_version: 1
+name: cicd_diagnosis_env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+
+tasks:
+  - name: log_diagnosis
+    description: "Read pipeline logs and identify the root cause of the failure."
+  - name: suggest_fix
+    description: "Read logs, diagnose the issue, and suggest a specific file fix."
+  - name: auto_remediate
+    description: "Diagnose, fix, and re-run the pipeline to verify."
+
+observation_space:
+  type: object
+  properties:
+    pipeline_status:
+      type: string
+    current_stage:
+      type: string
+    log_output:
+      type: string
+    error_summary:
+      type: string
+    available_actions:
+      type: array
+      items:
+        type: string
+    config_snapshot:
+      type: string
+    diagnosis_feedback:
+      type: string
+    fix_feedback:
+      type: string
+    task_name:
+      type: string
+    step_number:
+      type: integer
+
+action_space:
+  type: object
+  properties:
+    action_type:
+      type: string
+      enum: ["read_logs", "diagnose", "fix", "run_pipeline"]
+    target:
+      type: string
+    content:
+      type: string

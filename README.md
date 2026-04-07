@@ -1,3 +1,12 @@
+---
+title: CICD Pipeline Diagnosis Env
+emoji: 🔥
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # 🔧 CI/CD Pipeline Diagnosis Environment
 
 [![OpenEnv](https://img.shields.io/badge/OpenEnv-Compatible-blue)](https://github.com/meta-pytorch/OpenEnv)

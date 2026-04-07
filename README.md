@@ -46,7 +46,7 @@ python inference.py
 ### Docker
 
 ```bash
-docker build -t cicd-diagnosis-env:latest -f server/Dockerfile .
+docker build -t cicd-diagnosis-env:latest .
 docker run -p 8000:8000 cicd-diagnosis-env:latest
 ```
 

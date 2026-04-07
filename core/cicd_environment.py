@@ -362,7 +362,9 @@ class CICDEnvironment(Environment):
             return self._state.diagnosed_correctly and self._state.fix_applied
 
         elif task == "auto_remediate":
-            return self._state.pipeline_rerun
+            # Requires the pipeline to actually PASS after the fix — not just be re-run.
+            # An agent that re-runs without a working fix should not complete the task.
+            return self._state.pipeline_rerun and self._state.pipeline_passed
 
         return False
 

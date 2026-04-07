@@ -7,7 +7,7 @@ agent against all 3 tasks in the CI/CD diagnosis environment.
 
 MANDATORY Environment Variables:
     API_BASE_URL   The API endpoint for the LLM (default: HuggingFace router)
-    MODEL_NAME     The model identifier to use (default: Qwen/Qwen2.5-72B-Instruct)
+    MODEL_NAME     The model identifier to use (default: meta-llama/Meta-Llama-3-70B-Instruct)
     HF_TOKEN       Your Hugging Face / API key
     IMAGE_NAME     Docker image name (if using from_docker_image)
 

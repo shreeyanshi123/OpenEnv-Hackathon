@@ -143,7 +143,7 @@ The environment provides **dense rewards** at every step (not just binary pass/f
 
 ## Scenarios
 
-12+ realistic CI/CD failure scenarios across categories:
+15 realistic CI/CD failure scenarios across categories:
 
 | Category | Scenario | Difficulty | Root Cause |
 |----------|----------|:----------:|------------|
@@ -196,17 +196,17 @@ cicd_diagnosis_env/
 ├── README.md                # This file
 ├── scenarios/
 │   ├── __init__.py
-│   └── registry.py          # 12+ failure scenario definitions
+│   └── registry.py          # 15 failure scenario definitions
 ├── core/
 │   ├── __init__.py
 │   ├── cicd_environment.py   # Core Environment implementation
 │   ├── pipeline_simulator.py # Pipeline simulation engine
 │   └── graders.py            # Task graders (0.0-1.0 scores)
+├── Dockerfile               # Container image (project root)
 └── server/
     ├── __init__.py
     ├── app.py                # FastAPI application
-    ├── requirements.txt      # Server dependencies
-    └── Dockerfile            # Container image
+    └── requirements.txt      # Server dependencies
 ```
 
 ---
@@ -291,7 +291,7 @@ curl -X POST http://localhost:8000/reset \
 # Step
 curl -X POST http://localhost:8000/step \
   -H "Content-Type: application/json" \
-  -d '{"action_type": "read_logs", "target": "build", "content": ""}'
+  -d '{"action": {"action_type": "read_logs", "target": "build", "content": ""}}'
 ```
 
 ---

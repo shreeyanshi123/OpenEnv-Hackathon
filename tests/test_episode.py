@@ -40,15 +40,22 @@ def test_auto_remediate_requires_pipeline_pass():
 def test_auto_remediate_success():
     """Verify a perfect run completes the episode."""
     env = CICDEnvironment()
-    env.reset(task="auto_remediate")
+    env.reset(task="auto_remediate", scenario_id="missing_dependency")
     
-    # Apply perfect fix
+    # Read relevant logs first (10% of score)
+    env.step(CICDAction(action_type="read_logs", target="build"))
+    
+    # Diagnose correctly (15% of score)
+    env.step(CICDAction(action_type="diagnose", content="Missing dependency: pandas is not listed in requirements.txt"))
+    
+    # Apply perfect fix (35% of score)
     perfect_fix = "flask==3.0.0\nrequests==2.31.0\npandas>=2.0.0\n"
     env.step(CICDAction(action_type="fix", target="requirements.txt", content=perfect_fix))
     
-    # Rerun the pipeline (it should pass)
+    # Rerun the pipeline (40% of score — it should pass)
     obs = env.step(CICDAction(action_type="run_pipeline"))
     
     assert obs.done is True
     assert env._state.pipeline_passed is True
     assert env.get_final_score() > 0.9
+

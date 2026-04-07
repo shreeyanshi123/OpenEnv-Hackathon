@@ -20,8 +20,8 @@ def test_reset():
     assert response.status_code == 200
     data = response.json()
     
-    # Because openenv observation schemas vary slightly, we check for presence
-    # of things our CICDEnv provides
-    assert "task_name" in data
-    assert data["task_name"] == "log_diagnosis"
-    assert "pipeline_status" in data
+    # The response wraps the CICDObservation under 'observation'
+    obs = data.get("observation", data)
+    assert "task_name" in obs
+    assert obs["task_name"] == "log_diagnosis"
+    assert "pipeline_status" in obs

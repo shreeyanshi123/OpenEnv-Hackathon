@@ -7,7 +7,10 @@ Extends EnvClient with proper serialization/deserialization for our typed models
 
 from openenv.core.env_client import EnvClient, StepResult
 
-from .models import CICDAction, CICDObservation, CICDState
+try:
+    from .models import CICDAction, CICDObservation, CICDState
+except ImportError:
+    from models import CICDAction, CICDObservation, CICDState
 
 
 class CICDEnv(EnvClient):

@@ -53,36 +53,6 @@ def _keyword_match_score(text: str, keywords: List[str]) -> float:
     return matches / len(keywords)
 
 
-def _fix_validator_keywords(fix_text: str, keywords: List[str], expected: str) -> float:
-    """Validate a fix based on keyword presence and similarity to expected fix."""
-    if not fix_text.strip():
-        return 0.0
-
-    # Keyword matching (60% weight)
-    kw_score = _keyword_match_score(fix_text, keywords)
-
-    # Check if key structural elements are present (40% weight)
-    expected_lines = [l.strip() for l in expected.strip().splitlines() if l.strip()]
-    fix_lines = [l.strip() for l in fix_text.strip().splitlines() if l.strip()]
-
-    if not expected_lines:
-        return kw_score
-
-    line_matches = 0
-    for exp_line in expected_lines:
-        for fix_line in fix_lines:
-            # Fuzzy line match — check if core content overlaps
-            exp_tokens = set(re.findall(r'\w+', exp_line.lower()))
-            fix_tokens = set(re.findall(r'\w+', fix_line.lower()))
-            if exp_tokens and fix_tokens:
-                overlap = len(exp_tokens & fix_tokens) / len(exp_tokens)
-                if overlap >= constants.LINE_OVERLAP_THRESHOLD:
-                    line_matches += 1
-                    break
-
-    structure_score = line_matches / len(expected_lines)
-
-    return constants.KEYWORD_WEIGHT * kw_score + constants.STRUCTURE_WEIGHT * structure_score
 
 
 # ---------------------------------------------------------------------------
@@ -142,11 +112,11 @@ Error: Process completed with exit code 1.""",
         "config": "requirements.txt:\nflask==3.0.0\nrequests==2.31.0\n",
     },
     error_summary="Build failed: ModuleNotFoundError: No module named 'pandas'",
-    root_cause="The package 'pandas' is imported in app/data_loader.py but not listed in requirements.txt",
+    root_cause="Missing dependency: 'pandas' is imported in app/data_loader.py but this dependency is not listed in requirements.txt",
     diagnosis_keywords=["pandas", "missing", "requirements", "dependency"],
     expected_fix_file="requirements.txt",
     expected_fix="flask==3.0.0\nrequests==2.31.0\npandas>=2.0.0\n",
-    fix_keywords=["pandas", "requirements"],
+    fix_keywords=["pandas", "flask", "requests"],
 ))
 
 _register(Scenario(
@@ -192,7 +162,7 @@ jobs:
         BUILD_MODE: production""",
     },
     error_summary="YAML syntax error at line 9: mapping values are not allowed in this context",
-    root_cause="The 'env' key on line 9 has incorrect indentation — it should be aligned under the step (2 more spaces)",
+    root_cause="YAML syntax error: the 'env' key on line 9 has incorrect indentation — it should be aligned under the step (2 more spaces)",
     diagnosis_keywords=["yaml", "indentation", "syntax", "env"],
     expected_fix_file=".github/workflows/ci.yml",
     expected_fix="""\
@@ -647,7 +617,7 @@ jest.config.js:
       - run: ./deploy.sh
         env:
           DEPLOY_API_ENDPOINT: ${{ secrets.API_URL }}""",
-    fix_keywords=["node", "18", "20", "DEPLOY_API_ENDPOINT", "timeout", "10000"],
+    fix_keywords=["node", "18", "20", "DEPLOY_API_ENDPOINT"],
     secondary_issues=[
         {
             "file": "jest.config.js",
@@ -936,7 +906,7 @@ services:
       - POSTGRES_PASSWORD=test""",
     },
     error_summary="Test failed: SequelizeConnectionError: getaddrinfo ENOTFOUND db-primary.internal",
-    root_cause="The application is trying to connect to 'db-primary.internal' but the actual database service in docker-compose is named 'db'. The environment variable POSTGRES_HOST needs to be updated.",
+    root_cause="DNS resolution failure (ENOTFOUND): the application hostname 'db-primary.internal' cannot be resolved in the Docker network because the database service in docker-compose is named 'db'. The POSTGRES_HOST environment variable must be updated to match.",
     diagnosis_keywords=["dns", "ENOTFOUND", "db-primary.internal", "db", "hostname", "network", "POSTGRES_HOST"],
     expected_fix_file="docker-compose.test.yml",
     expected_fix="""\
@@ -1062,7 +1032,7 @@ python-version: '3.8'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'""",
-    fix_keywords=["python-version", "3.10", "3.11"],
+    fix_keywords=["python-version", "3.11"],
 ))
 
 

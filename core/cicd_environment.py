@@ -48,7 +48,17 @@ class CICDEnvironment(Environment):
         # Auto-initialize with default scenario so env is always valid
         task_name = os.environ.get("CICD_TASK", "log_diagnosis")
         scenario_id = TASK_DEFAULT_SCENARIO.get(task_name, "missing_dependency")
-        self._scenario: Optional[Scenario] = get_scenario(scenario_id)
+        
+        try:
+            self._scenario: Optional[Scenario] = get_scenario(scenario_id)
+        except KeyError:
+            # Fallback safely if scenario_id is invalid
+            try:
+                self._scenario = get_scenario("missing_dependency")
+            except KeyError:
+                from scenarios.registry import SCENARIOS
+                self._scenario = list(SCENARIOS.values())[0]
+
         self._simulator: Optional[PipelineSimulator] = PipelineSimulator(self._scenario)
         self._state = CICDState(
             episode_id=str(uuid4()),
@@ -76,18 +86,19 @@ class CICDEnvironment(Environment):
         scenario_id = kwargs.get("scenario_id", os.environ.get("CICD_SCENARIO", ""))
 
         # Pick scenario
-        if scenario_id and scenario_id in TASK_DEFAULT_SCENARIO.values():
-            try:
+        try:
+            if scenario_id:
                 self._scenario = get_scenario(scenario_id)
-            except KeyError:
+            else:
                 self._scenario = get_scenario(TASK_DEFAULT_SCENARIO.get(task_name, "missing_dependency"))
-        elif scenario_id:
+        except KeyError:
+            # Safely fallback to guaranteed existing keys
             try:
-                self._scenario = get_scenario(scenario_id)
+                fallback_id = TASK_DEFAULT_SCENARIO.get("log_diagnosis", "missing_dependency")
+                self._scenario = get_scenario(fallback_id)
             except KeyError:
-                self._scenario = get_scenario(TASK_DEFAULT_SCENARIO.get(task_name, "missing_dependency"))
-        else:
-            self._scenario = get_scenario(TASK_DEFAULT_SCENARIO.get(task_name, "missing_dependency"))
+                from scenarios.registry import SCENARIOS
+                self._scenario = list(SCENARIOS.values())[0]
 
         self._simulator = PipelineSimulator(self._scenario)
         self._done = False

@@ -22,6 +22,7 @@ ENV PYTHONPATH="/app:${PYTHONPATH:-}"
 ENV PORT=7860
 EXPOSE 7860
 
-# Run the FastAPI server
-# We use the shell form to ensure $PORT is expanded correctly
-CMD uvicorn server.app:app --host 0.0.0.0 --port $PORT
+# Run the FastAPI server.
+# exec form is used so uvicorn is PID 1 and receives SIGTERM directly.
+# The shell wrapper is only needed to expand the $PORT variable.
+CMD ["sh", "-c", "exec uvicorn server.app:app --host 0.0.0.0 --port ${PORT:-7860}"]

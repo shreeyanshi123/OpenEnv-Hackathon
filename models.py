@@ -47,8 +47,8 @@ class CICDObservation(Observation):
     log_output: str = Field(default="", description="Log text from requested stage")
     error_summary: str = Field(default="", description="One-line error summary")
     available_actions: List[str] = Field(
-        default_factory=lambda: ["read_logs", "diagnose", "fix", "run_pipeline"],
-        description="Valid action types for current state",
+        default_factory=list,
+        description="Valid action types for current state (set by environment on each step)",
     )
     config_snapshot: str = Field(default="", description="Current pipeline config YAML")
     diagnosis_feedback: str = Field(default="", description="Feedback on diagnosis")

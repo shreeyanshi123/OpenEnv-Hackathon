@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
+import core.constants as constants
 
 
 @dataclass
@@ -75,13 +76,13 @@ def _fix_validator_keywords(fix_text: str, keywords: List[str], expected: str) -
             fix_tokens = set(re.findall(r'\w+', fix_line.lower()))
             if exp_tokens and fix_tokens:
                 overlap = len(exp_tokens & fix_tokens) / len(exp_tokens)
-                if overlap >= 0.6:
+                if overlap >= constants.LINE_OVERLAP_THRESHOLD:
                     line_matches += 1
                     break
 
     structure_score = line_matches / len(expected_lines)
 
-    return 0.6 * kw_score + 0.4 * structure_score
+    return constants.KEYWORD_WEIGHT * kw_score + constants.STRUCTURE_WEIGHT * structure_score
 
 
 # ---------------------------------------------------------------------------

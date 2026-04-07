@@ -211,6 +211,23 @@ cicd_diagnosis_env/
 
 ---
 
+## OpenEnv Manifest (`openenv.yaml`)
+
+The file `openenv.yaml` is the **OpenEnv configuration manifest** that declares this environment to the OpenEnv framework. It specifies:
+
+| Field | Value | Purpose |
+|-------|-------|---------|
+| `spec_version` | `1` | OpenEnv spec version |
+| `name` | `cicd_diagnosis_env` | Unique environment identifier |
+| `type` | `space` | Deployment mode (Hugging Face Space) |
+| `runtime` | `fastapi` | Server framework |
+| `app` | `server.app:app` | ASGI application entrypoint |
+| `port` | `8000` | Default listening port |
+
+It also declares the three tasks (`log_diagnosis`, `suggest_fix`, `auto_remediate`) and the full observation/action JSON schemas so that OpenEnv clients and evaluators can auto-discover the environment's interface without reading source code.
+
+---
+
 ## Baseline Scores
 
 Running with `meta-llama/Meta-Llama-3-70B-Instruct`:

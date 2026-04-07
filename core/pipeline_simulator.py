@@ -11,6 +11,7 @@ import re
 from typing import Dict, Tuple
 
 from scenarios.registry import Scenario, _keyword_match_score
+import core.constants as constants
 
 
 class PipelineSimulator:
@@ -93,13 +94,13 @@ class PipelineSimulator:
                 fix_tokens = set(re.findall(r'\w+', fix_line.lower()))
                 if fix_tokens:
                     overlap = len(exp_tokens & fix_tokens) / len(exp_tokens)
-                    if overlap >= 0.6:
+                    if overlap >= constants.LINE_OVERLAP_THRESHOLD:
                         line_matches += 1
                         break
 
         structure_score = line_matches / len(expected_lines) if expected_lines else 0.0
 
-        return 0.6 * kw_score + 0.4 * structure_score
+        return constants.KEYWORD_WEIGHT * kw_score + constants.STRUCTURE_WEIGHT * structure_score
 
     def run_pipeline(self) -> Tuple[bool, str, float]:
         """

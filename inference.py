@@ -22,17 +22,18 @@ import json
 import os
 import sys
 import textwrap
+import traceback
 from typing import Dict, List, Optional
 
 from openai import OpenAI
 
-# ── Add project root to path ─────────────────────────────────────────────
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 
 from models import CICDAction, CICDObservation
 from core.cicd_environment import CICDEnvironment
 from core.graders import grade_task
 from scenarios.registry import get_scenario, TASK_DEFAULT_SCENARIO
+import core.constants as constants
 
 # ── Configuration ─────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ IMAGE_NAME = os.getenv("IMAGE_NAME")
 # MANDATORY VARIABLES PER HACKATHON SPECS
 HF_TOKEN = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-MODEL_NAME = os.getenv("MODEL_NAME") or "meta-llama/Llama-3.1-8B-Instruct"
+MODEL_NAME = os.getenv("MODEL_NAME") or "meta-llama/Meta-Llama-3-70B-Instruct"
 
 # GROQ FALLBACK (Allows free Llama testing if HF credits are out)
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -48,10 +49,9 @@ if GROQ_API_KEY:
     API_BASE_URL = "https://api.groq.com/openai/v1"
     MODEL_NAME = "llama-3.1-8b-instant" # Fast, free Llama 3.1 on Groq
     HF_TOKEN = GROQ_API_KEY
-    print(f"--- USING GROQ PROVIDER (FREE LLAMA) ---", flush=True)
 BENCHMARK = "cicd_diagnosis"
 
-MAX_STEPS = 15
+MAX_STEPS = constants.MAX_STEPS
 TEMPERATURE = 0.6
 MAX_TOKENS = 500
 
@@ -317,12 +317,12 @@ def run_task(client: OpenAI, task_name: str) -> float:
         # Compute final graded score
         score = env.get_final_score()
         score = min(max(score, 0.0), 1.0)
-        success = score >= 0.3
+        success = score >= constants.SUCCESS_SCORE_THRESHOLD
 
     except Exception as e:
         print(f"[DEBUG] Task {task_name} error: {e}", flush=True)
-        import traceback
         traceback.print_exc()
+        success = False
 
     finally:
         log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
@@ -353,7 +353,7 @@ def main() -> None:
     print("SUMMARY", flush=True)
     print(f"{'='*60}", flush=True)
     for task, score in all_scores.items():
-        status = "✓ PASS" if score >= 0.3 else "✗ FAIL"
+        status = "✓ PASS" if score >= constants.SUCCESS_SCORE_THRESHOLD else "✗ FAIL"
         print(f"  {task:20s} → score={score:.2f}  {status}", flush=True)
 
     avg_score = sum(all_scores.values()) / len(all_scores) if all_scores else 0.0

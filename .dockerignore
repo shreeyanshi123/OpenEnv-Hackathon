@@ -1,14 +1,47 @@
-# Docker build exclusions
-__pycache__/
-*.pyc
-*.pyo
+# ── Version control ────────────────────────────────────────────
 .git/
 .github/
-*.md
-!README.md
-.env
+.gitignore
+
+# ── Python bytecode & caches ───────────────────────────────────
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 *.egg-info/
+
+# ── Build / dist artefacts ─────────────────────────────────────
 dist/
 build/
 outputs/
-.pytest_cache/
+
+# ── Environment & credentials ──────────────────────────────────
+.env
+.env.*
+.venv/
+venv/
+env/
+
+# ── Tests & dev-only files ─────────────────────────────────────
+tests/
+*.test.*
+
+# ── Documentation (keep README for HF Spaces) ─────────────────
+*.md
+!README.md
+
+# ── IDE / OS noise ─────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Coverage & profiling ───────────────────────────────────────
+htmlcov/
+.coverage
+*.prof

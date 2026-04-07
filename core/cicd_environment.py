@@ -28,9 +28,7 @@ from scenarios.registry import (
 )
 from core.graders import grade_task
 from core.pipeline_simulator import PipelineSimulator
-
-MAX_STEPS = 15
-STEP_PENALTY = 0.02
+import core.constants as constants
 
 
 class CICDEnvironment(Environment):
@@ -164,7 +162,7 @@ class CICDEnvironment(Environment):
         reward = 0.0
 
         # Step penalty
-        reward -= STEP_PENALTY
+        reward -= constants.STEP_PENALTY
 
         # Dispatch by action type
         action_type = action.action_type.lower().strip()
@@ -194,7 +192,7 @@ class CICDEnvironment(Environment):
         self._last_reward = reward
 
         # Check if episode should end
-        if self._state.step_count >= MAX_STEPS:
+        if self._state.step_count >= constants.MAX_STEPS:
             self._done = True
 
         # Check task-specific completion
@@ -269,11 +267,11 @@ class CICDEnvironment(Environment):
         score = _keyword_match_score(diagnosis, self._scenario.diagnosis_keywords)
         self._state.diagnosis_score = max(self._state.diagnosis_score, score)
 
-        if score >= 0.6:
+        if score >= constants.DIAGNOSIS_GOOD_THRESHOLD:
             self._state.diagnosed_correctly = True
             feedback = "Good diagnosis — you've identified the key issue."
             reward = 0.1 + 0.3 * score  # 0.1 to 0.4
-        elif score >= 0.3:
+        elif score >= constants.DIAGNOSIS_PARTIAL_THRESHOLD:
             feedback = "Partial diagnosis — you're on the right track but missing some details."
             reward = 0.05 + 0.1 * score
         else:
@@ -304,9 +302,9 @@ class CICDEnvironment(Environment):
         self._state.fix_applied = True
         self._state.fix_score = max(self._state.fix_score, score)
 
-        if score >= 0.7:
+        if score >= constants.FIX_GOOD_THRESHOLD:
             reward = 0.2 + 0.3 * score
-        elif score >= 0.4:
+        elif score >= constants.FIX_PARTIAL_THRESHOLD:
             reward = 0.1 + 0.1 * score
         else:
             reward = -0.05

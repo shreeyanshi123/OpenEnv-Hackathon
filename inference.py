@@ -187,47 +187,6 @@ def build_user_prompt(
     return "\n".join(parts)
 
 
-def parse_model_response(text: str) -> Dict:
-    """Parse LLM response into an action dict."""
-    text = text.strip()
-
-    # Try to extract JSON from the response
-    # Handle markdown code blocks
-    if "```json" in text:
-        text = text.split("```json")[1].split("```")[0].strip()
-    elif "```" in text:
-        text = text.split("```")[1].split("```")[0].strip()
-
-    # Try direct JSON parse
-    try:
-        data = json.loads(text)
-        if isinstance(data, dict) and "action_type" in data:
-            return data
-    except json.JSONDecodeError:
-        pass
-
-    # Try to find JSON in the text
-    import re
-    json_match = re.search(r'\{[^{}]*"action_type"[^{}]*\}', text, re.DOTALL)
-    if json_match:
-        try:
-            return json.loads(json_match.group())
-        except json.JSONDecodeError:
-            pass
-
-    # Fallback: try to infer action from text
-    text_lower = text.lower()
-    if "read" in text_lower and "log" in text_lower:
-        return {"action_type": "read_logs", "target": "build", "content": ""}
-    elif "diagnos" in text_lower:
-        return {"action_type": "diagnose", "target": "", "content": text}
-    elif "fix" in text_lower:
-        return {"action_type": "fix", "target": "", "content": text}
-    elif "run" in text_lower and "pipeline" in text_lower:
-        return {"action_type": "run_pipeline", "target": "", "content": ""}
-
-    # Last resort: read logs
-    return {"action_type": "read_logs", "target": "build", "content": ""}
 
 
 def get_model_action(
@@ -250,12 +209,20 @@ def get_model_action(
             ],
             temperature=TEMPERATURE,
             max_tokens=MAX_TOKENS,
+            response_format={"type": "json_object"},
             stream=False,
         )
         text = (completion.choices[0].message.content or "").strip()
-        return parse_model_response(text)
+        data = json.loads(text)
+        
+        # Ensure fallback for missed keys
+        return {
+            "action_type": data.get("action_type", "read_logs"),
+            "target": data.get("target", ""),
+            "content": data.get("content", ""),
+        }
     except Exception as exc:
-        print(f"[DEBUG] Model request failed: {exc}", flush=True)
+        print(f"[DEBUG] Model request failed or parsing failed: {exc}", flush=True)
         # Fallback action
         return {"action_type": "read_logs", "target": "build", "content": ""}
 

@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from openenv.core.env_server.http_server import create_app
 
 from models import CICDAction, CICDObservation
-from server.cicd_environment import CICDEnvironment
+from core.cicd_environment import CICDEnvironment
 
 # Create the app — pass the class for per-session instances
 app = create_app(

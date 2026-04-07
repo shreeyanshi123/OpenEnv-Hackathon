@@ -26,8 +26,8 @@ from scenarios.registry import (
     get_scenario,
     get_scenarios_for_task,
 )
-from server.graders import grade_task
-from server.pipeline_simulator import PipelineSimulator
+from core.graders import grade_task
+from core.pipeline_simulator import PipelineSimulator
 
 MAX_STEPS = 15
 STEP_PENALTY = 0.02

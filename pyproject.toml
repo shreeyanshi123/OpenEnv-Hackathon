@@ -28,5 +28,5 @@ dev = [
 server = "server.app:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["server", "scenarios", "models.py", "client.py"]
+packages = ["server", "core", "scenarios", "models.py", "client.py"]
 

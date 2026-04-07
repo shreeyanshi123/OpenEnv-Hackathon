@@ -30,8 +30,8 @@ from openai import OpenAI
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from models import CICDAction, CICDObservation
-from server.cicd_environment import CICDEnvironment
-from server.graders import grade_task
+from core.cicd_environment import CICDEnvironment
+from core.graders import grade_task
 from scenarios.registry import get_scenario, TASK_DEFAULT_SCENARIO
 
 # ── Configuration ─────────────────────────────────────────────────────────

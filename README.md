@@ -197,11 +197,13 @@ cicd_diagnosis_env/
 ├── scenarios/
 │   ├── __init__.py
 │   └── registry.py          # 12+ failure scenario definitions
+├── core/
+│   ├── __init__.py
+│   ├── cicd_environment.py   # Core Environment implementation
+│   ├── pipeline_simulator.py # Pipeline simulation engine
+│   └── graders.py            # Task graders (0.0-1.0 scores)
 └── server/
     ├── __init__.py
-    ├── cicd_environment.py   # Core Environment implementation
-    ├── pipeline_simulator.py # Pipeline simulation engine
-    ├── graders.py            # Task graders (0.0-1.0 scores)
     ├── app.py                # FastAPI application
     ├── requirements.txt      # Server dependencies
     └── Dockerfile            # Container image

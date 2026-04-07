@@ -15,12 +15,6 @@ Usage:
     ...     result = await client.step(CICDAction(action_type="read_logs", target="build"))
 """
 
-try:
-    from .client import CICDEnv
-    from .models import CICDAction, CICDObservation, CICDState
-except ImportError:
-    # When running from project root (e.g. pytest, uvicorn), use absolute imports
-    from client import CICDEnv
-    from models import CICDAction, CICDObservation, CICDState
+from models import CICDAction, CICDObservation, CICDState
 
-__all__ = ["CICDAction", "CICDObservation", "CICDState", "CICDEnv"]
+__all__ = ["CICDAction", "CICDObservation", "CICDState"]

@@ -358,8 +358,8 @@ def run_task(client: OpenAI, task_name: str) -> float:
 
 def main() -> None:
     """Run all tasks and report results."""
-    if not HF_TOKEN:
-        raise ValueError("HF_TOKEN environment variable not set. This is mandatory for submission.")
+    if HF_TOKEN is None:
+        raise ValueError("HF_TOKEN environment variable is required")
 
 
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)

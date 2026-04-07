@@ -219,7 +219,7 @@ class CICDEnvironment(Environment):
 
     # ── Action Handlers ────────────────────────────────────────────────────
 
-    def _handle_read_logs(self, action: CICDAction) -> tuple:
+    def _handle_read_logs(self, action: CICDAction) -> tuple[CICDObservation, float]:
         """Handle read_logs action."""
         target = action.target.lower().strip() if action.target else ""
 
@@ -255,7 +255,7 @@ class CICDEnvironment(Environment):
         )
         return obs, reward
 
-    def _handle_diagnose(self, action: CICDAction) -> tuple:
+    def _handle_diagnose(self, action: CICDAction) -> tuple[CICDObservation, float]:
         """Handle diagnose action."""
         diagnosis = action.content.strip()
 
@@ -286,7 +286,7 @@ class CICDEnvironment(Environment):
         )
         return obs, reward
 
-    def _handle_fix(self, action: CICDAction) -> tuple:
+    def _handle_fix(self, action: CICDAction) -> tuple[CICDObservation, float]:
         """Handle fix action."""
         fix_content = action.content.strip()
         target_file = action.target.strip() if action.target else ""
@@ -317,7 +317,7 @@ class CICDEnvironment(Environment):
         )
         return obs, reward
 
-    def _handle_run_pipeline(self, action: CICDAction) -> tuple:
+    def _handle_run_pipeline(self, action: CICDAction) -> tuple[CICDObservation, float]:
         """Handle run_pipeline action."""
         self._state.pipeline_rerun = True
 

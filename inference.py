@@ -42,13 +42,6 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
 MODEL_NAME = os.getenv("MODEL_NAME") or "meta-llama/Llama-3.1-8B-Instruct"
 
-# GROQ FALLBACK (Allows free Llama testing if HF credits are out)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-if GROQ_API_KEY:
-    API_BASE_URL = "https://api.groq.com/openai/v1"
-    MODEL_NAME = "llama-3.1-8b-instant" # Fast, free Llama 3.1 on Groq
-    HF_TOKEN = GROQ_API_KEY
-    print(f"--- USING GROQ PROVIDER (FREE LLAMA) ---", flush=True)
 BENCHMARK = "cicd_diagnosis"
 
 MAX_STEPS = 15
@@ -366,8 +359,8 @@ def run_task(client: OpenAI, task_name: str) -> float:
 def main() -> None:
     """Run all tasks and report results."""
     if not HF_TOKEN:
-        print("ERROR: HF_TOKEN environment variable not set. This is mandatory for submission.", flush=True)
-        sys.exit(1)
+        raise ValueError("HF_TOKEN environment variable not set. This is mandatory for submission.")
+
 
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 

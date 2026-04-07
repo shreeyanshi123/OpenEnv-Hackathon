@@ -14,7 +14,7 @@ import sys
 # Ensure parent directory is in path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from openenv.core.env_server.http_server import create_app
+from openenv.core.env_server.http_server import create_ap
 
 from models import CICDAction, CICDObservation
 from server.cicd_environment import CICDEnvironment

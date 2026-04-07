@@ -11,6 +11,9 @@ import json
 import os
 import sys
 
+# Ensure parent directory is in path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from openenv.core.env_server.http_server import create_app
 
 from models import CICDAction, CICDObservation

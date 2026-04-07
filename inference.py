@@ -27,7 +27,8 @@ from typing import Dict, List, Optional
 
 from openai import OpenAI
 
-
+# Ensure parent directory is in path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from models import CICDAction, CICDObservation
 from core.cicd_environment import CICDEnvironment
@@ -332,9 +333,9 @@ def run_task(client: OpenAI, task_name: str) -> float:
 
 def main() -> None:
     """Run all tasks and report results."""
-    if not HF_TOKEN:
-        print("ERROR: HF_TOKEN environment variable not set. This is mandatory for submission.", flush=True)
-        sys.exit(1)
+    if HF_TOKEN is None:
+        raise ValueError("HF_TOKEN environment variable is required")
+
 
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 

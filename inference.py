@@ -14,7 +14,7 @@ MANDATORY Environment Variables:
 STDOUT FORMAT:
     [START] task=<task_name> env=<benchmark> model=<model_name>
     [STEP]  step=<n> action=<action_str> reward=<0.00> done=<true|false> error=<msg|null>
-    [END]   success=<true|false> steps=<n> rewards=<r1,r2,...,rn>
+    [END]   success=<true|false> steps=<n> score=<0.00> rewards=<r1,r2,...,rn>
 """
 
 import asyncio
@@ -72,10 +72,10 @@ def log_step(step: int, action: str, reward: float, done: bool, error: Optional[
     )
 
 
-def log_end(success: bool, steps: int, rewards: List[float]) -> None:
+def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
     rewards_str = ",".join(f"{r:.2f}" for r in rewards)
     print(
-        f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}",
+        f"[END] success={str(success).lower()} steps={steps} score={score:.2f} rewards={rewards_str}",
         flush=True,
     )
 
@@ -233,7 +233,7 @@ def run_task(client: OpenAI, task_name: str) -> float:
     history: List[str] = []
     rewards: List[float] = []
     steps_taken = 0
-    score = 0.0
+    score = 0.01
     success = False
 
     log_start(task=task_name, env=BENCHMARK, model=MODEL_NAME)
@@ -318,9 +318,10 @@ def run_task(client: OpenAI, task_name: str) -> float:
         print(f"[DEBUG] Task {task_name} error: {e}", flush=True)
         traceback.print_exc()
         success = False
+        score = max(score, 0.01)  # Ensure score is never 0.0
 
     finally:
-        log_end(success=success, steps=steps_taken, rewards=rewards)
+        log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
 
     return score
 

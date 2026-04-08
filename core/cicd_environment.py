@@ -207,6 +207,9 @@ class CICDEnvironment(Environment):
         # For serialization via OpenEnv framework
         obs.done = self._done
         obs.reward = reward
+        
+        if obs.done:
+            obs.metadata["score"] = self.get_final_score()
 
         return obs
 
@@ -407,6 +410,7 @@ class CICDEnvironment(Environment):
         )
         obs.done = True
         obs.reward = reward
+        obs.metadata["score"] = self.get_final_score()
         return obs
 
     def get_final_score(self) -> float:

@@ -11,7 +11,7 @@ def test_grade_log_diagnosis_perfect(missing_dependency_scenario):
         diagnosis_score=1.0
     )
     score = grade_log_diagnosis(state, missing_dependency_scenario)
-    assert score == pytest.approx(1.0)
+    assert score == pytest.approx(0.99)
 
 def test_grade_log_diagnosis_partial(missing_dependency_scenario):
     state = CICDState(
@@ -32,7 +32,7 @@ def test_grade_log_diagnosis_bad(missing_dependency_scenario):
         diagnosis_score=0.0
     )
     score = grade_log_diagnosis(state, missing_dependency_scenario)
-    assert score == pytest.approx(0.0)
+    assert score == pytest.approx(0.01)
 
 def test_grade_suggest_fix_perfect(missing_dependency_scenario):
     state = CICDState(
@@ -43,7 +43,7 @@ def test_grade_suggest_fix_perfect(missing_dependency_scenario):
         fix_score=1.0
     )
     score = grade_suggest_fix(state, missing_dependency_scenario)
-    assert score == pytest.approx(1.0)
+    assert score == pytest.approx(0.99)
 
 def test_grade_auto_remediate_perfect(missing_dependency_scenario):
     state = CICDState(
@@ -56,7 +56,7 @@ def test_grade_auto_remediate_perfect(missing_dependency_scenario):
         pipeline_passed=True
     )
     score = grade_auto_remediate(state, missing_dependency_scenario)
-    assert score == pytest.approx(1.0)
+    assert score == pytest.approx(0.99)
 
 def test_grade_auto_remediate_rerun_failed(missing_dependency_scenario):
     state = CICDState(

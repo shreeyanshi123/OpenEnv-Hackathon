@@ -1,6 +1,5 @@
 __pycache__/
 *.pyc
 scenarios.jsonl
-uv.lock
 .env
 .DS_Store

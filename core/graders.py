@@ -1,8 +1,9 @@
 """
 Task Graders — deterministic scoring functions for each task.
 
-Each grader returns a float in [0.0, 1.0] based on the agent's performance
+Each grader returns a float in (0.01, 0.99) based on the agent's performance
 across the episode. Scores are deterministic given the same state.
+OpenEnv requires scores strictly within (0, 1).
 """
 
 from __future__ import annotations
@@ -35,7 +36,7 @@ def grade_log_diagnosis(state: CICDState, scenario: Scenario) -> float:
     # 80%: Diagnosis quality
     score += 0.80 * state.diagnosis_score
 
-    return min(max(score, 0.0), 1.0)
+    return min(max(score, 0.01), 0.99)
 
 
 def grade_suggest_fix(state: CICDState, scenario: Scenario) -> float:
@@ -65,7 +66,7 @@ def grade_suggest_fix(state: CICDState, scenario: Scenario) -> float:
     # 70%: fix quality
     score += 0.70 * state.fix_score
 
-    return min(max(score, 0.0), 1.0)
+    return min(max(score, 0.01), 0.99)
 
 
 def grade_auto_remediate(state: CICDState, scenario: Scenario) -> float:
@@ -104,7 +105,7 @@ def grade_auto_remediate(state: CICDState, scenario: Scenario) -> float:
             # Partial credit for attempting rerun
             score += 0.05
 
-    return min(max(score, 0.0), 1.0)
+    return min(max(score, 0.01), 0.99)
 
 
 # Map task names to grader functions
@@ -125,7 +126,7 @@ def grade_task(task_name: str, state: CICDState, scenario: Scenario) -> float:
         scenario: The active scenario
 
     Returns:
-        Score in [0.0, 1.0]
+        Score in (0.01, 0.99) — strictly within (0, 1) per OpenEnv rules.
 
     Raises:
         ValueError: If task_name is unknown
@@ -133,4 +134,5 @@ def grade_task(task_name: str, state: CICDState, scenario: Scenario) -> float:
     grader = GRADERS.get(task_name)
     if grader is None:
         raise ValueError(f"Unknown task: {task_name}. Valid tasks: {list(GRADERS.keys())}")
-    return grader(state, scenario)
+    raw = grader(state, scenario)
+    return min(max(raw, 0.01), 0.99)

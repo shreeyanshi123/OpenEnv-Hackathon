@@ -309,9 +309,9 @@ def run_task(client: OpenAI, task_name: str) -> float:
             if done:
                 break
 
-        # Compute final graded score
+        # Compute final graded score — must be strictly within (0, 1)
         score = env.get_final_score()
-        score = min(max(score, 0.0), 1.0)
+        score = min(max(score, 0.01), 0.99)
         success = score >= constants.SUCCESS_SCORE_THRESHOLD
 
     except Exception as e:

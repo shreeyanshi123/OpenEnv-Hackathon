@@ -410,7 +410,11 @@ class CICDEnvironment(Environment):
         return obs
 
     def get_final_score(self) -> float:
-        """Get the final graded score for the episode."""
+        """Get the final graded score for the episode.
+
+        Returns a score strictly within (0, 1) per OpenEnv rules.
+        """
         if self._scenario is None:
-            return 0.0
-        return grade_task(self._state.task_name, self._state, self._scenario)
+            return 0.01
+        raw = grade_task(self._state.task_name, self._state, self._scenario)
+        return min(max(raw, 0.01), 0.99)

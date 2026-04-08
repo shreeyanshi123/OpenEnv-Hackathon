@@ -12,9 +12,9 @@ MANDATORY Environment Variables:
     IMAGE_NAME     Docker image name (if using from_docker_image)
 
 STDOUT FORMAT:
-    [START] task=<task> env=cicd_diagnosis model=<model>
+    [START] task=<task_name> env=<benchmark> model=<model_name>
     [STEP]  step=<n> action=<action_str> reward=<0.00> done=<true|false> error=<msg|null>
-    [END]   success=<true|false> steps=<n> score=<score> rewards=<r1,r2,...,rn>
+    [END]   success=<true|false> steps=<n> rewards=<r1,r2,...,rn>
 """
 
 import asyncio
@@ -65,20 +65,17 @@ def log_start(task: str, env: str, model: str) -> None:
 def log_step(step: int, action: str, reward: float, done: bool, error: Optional[str]) -> None:
     error_val = error if error else "null"
     done_val = str(done).lower()
-    # Truncate action string for readability
-    action_short = action.replace('\n', ' ')[:120]
-    # Two spaces after [STEP] for vertical alignment
+    action_val = action.replace("\n", " ")
     print(
-        f"[STEP]  step={step} action={action_short} reward={reward:.2f} done={done_val} error={error_val}",
+        f"[STEP] step={step} action={action_val} reward={reward:.2f} done={done_val} error={error_val}",
         flush=True,
     )
 
 
-def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
+def log_end(success: bool, steps: int, rewards: List[float]) -> None:
     rewards_str = ",".join(f"{r:.2f}" for r in rewards)
-    # Three spaces after [END] for vertical alignment
     print(
-        f"[END]   success={str(success).lower()} steps={steps} score={score:.2f} rewards={rewards_str}",
+        f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}",
         flush=True,
     )
 
@@ -323,7 +320,7 @@ def run_task(client: OpenAI, task_name: str) -> float:
         success = False
 
     finally:
-        log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
+        log_end(success=success, steps=steps_taken, rewards=rewards)
 
     return score
 
